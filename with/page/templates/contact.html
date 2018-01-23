@@ -1,0 +1,65 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+{% block content %}
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="tm-flex tm-contact-container">
+                            <div class="tm-bg-white-translucent text-xs-left tm-textbox tm-12-col-textbox-12 tm-textbox-padding tm-textbox-padding-contact">
+                                <h2 class="tm-contact-info">联系我们</h2>
+                                <p class="tm-text">希望能给我最好的建议，这样我们会认真聆听你的意见，把体验和舒适度做到你会离不开我们。</p>
+
+                                  {% if messages %}
+
+                                        {% for msg in messages %}
+                                            <div class="col-md-12">
+                                              <div class="box box-success">
+                                                <div class="box-header with-border">
+                                                  <h3 class="box-title">提交成功</h3>
+
+                                                  <div class="box-tools pull-right">
+                                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                                  </div>
+                                                </div>
+                                                <div class="box-body">
+                                                  {{ msg.message }}
+                                                </div>
+                                              </div>
+                                            </div>
+                                        {% endfor %}
+
+                                    {% endif %}
+
+
+
+                                <!-- contact form -->
+                                <form action="{% url 'page:contact' %}" method="post" class="tm-contact-form">
+                                    {% csrf_token %}
+
+                                    <div class="form-group">
+                                        <input type="text" id="contact_name" name="contact_name" class="form-control" placeholder="用户名"  required/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="email" id="contact_email" name="contact_email" class="form-control" placeholder="邮箱"  required/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <textarea id="contact_message" name="contact_message" class="form-control" rows="5" placeholder="建议" required></textarea>
+                                    </div>
+                                    <div class="right"><button type="submit" class="btn btn-primary btn-lg">传送</button></div>
+
+
+                                </form>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+{% endblock %}

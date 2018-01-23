@@ -1,0 +1,331 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+{% block content %}
+
+    <script src="{% static 'page/js/modernizr-2.6.2.min.js' %}"></script>
+	<div id="fh5co-offcanvas">
+		<a href="#" class="fh5co-close-offcanvas js-fh5co-close-offcanvas"><span><i class="icon-cross3"></i> <span>关闭</span></span></a>
+		<div class="fh5co-bio">
+			<figure>
+				<img src="/media/{{ user.avatar }}" alt="Free HTML5 Bootstrap Template" class="img-responsive">
+			</figure>
+			<h3 class="heading">{{ user.nickname }}</h3>
+			<h2>简介</h2>
+			<p>{{ user.intro | default_if_none:"这个人很懒什么都没写"}}</p>
+		</div>
+		<div class="fh5co-menu">
+			<div class="fh5co-box">
+				<h3 class="heading">个人中心</h3>
+				<ul>
+					<li><a href="{% url 'user:setting' %}">设置</a></li>
+					<li><a href="{% url 'user:user-like' user.id%}">收藏</a></li>
+                    <li><a href="{% url 'user:message'%}">消息</a></li>
+                    <li><a href="{% url 'page:push' %}" class="btn btn-primary btn-lg">发布文章</a></li>
+                    <li><a class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">发布话题</a></li>
+                    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"
+                                            aria-hidden="true">&times;</button>
+                                </div>
+                                <form class="form-horizontal" method="post" action="{% url 'page:topic' %}">
+                                    {% csrf_token %}
+                                    <textarea class="col-sm-2 control-label" style="width: 589px; height: 323px;"
+                                              name="topic"></textarea>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                        <button type="submit" class="btn btn-primary">提交</button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                    <li><a class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">发布闲聊</a></li>
+                    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"
+                                            aria-hidden="true">&times;</button>
+                                </div>
+                                <form class="form-horizontal" method="post" action="{% url 'page:chat' %}">
+                                    {% csrf_token %}
+                                    <textarea class="col-sm-2 control-label" style="width: 589px; height: 323px;"
+                                              name="chat"></textarea>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                        <button type="submit" class="btn btn-primary">提交</button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                    <li><a class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">发布看图</a></li>
+                    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"
+                                            aria-hidden="true">&times;</button>
+                                </div>
+                                <form class="form-horizontal" method="post" action="{% url 'page:image' %}"
+                                      enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <label for="inputAvatar" class="col-sm-2 control-label">图片</label>
+
+                                    <div class="col-sm-10">
+                                        <input type="file" class="form-control" id="inputAvatar" placeholder="Avatar"
+                                               name="image">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                        <button type="submit" class="btn btn-primary">提交</button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                    <li><a href="{% url 'user:password' %}">修改密码</a></li>
+				</ul>
+			</div>
+
+		</div>
+	</div>
+	<!-- END #fh5co-offcanvas -->
+	<header id="fh5co-header">
+		<div class="container-fluid">
+			<div class="row">
+				<a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle"><i></i></a>
+				<div class="col-lg-12 col-md-12 text-center">
+					<h1 id="fh5co-logo"><a href="{% url 'page:index' %}">With US</a></h1>
+				</div>
+
+			</div>
+		</div>
+	</header>
+
+
+
+    <div class="box box-widget widget-user">
+        <div class="widget-user-header bg-aqua-active">
+        </div>
+        <div class="widget-user-image">
+            <img class="img-circle" src="/media/{{ user.avatar }}" alt="{{ user.location }}" height="40">
+        </div>
+        <div class="box-footer">
+            <div class="row">
+                <div class="col-sm-4 border-right">
+                    <div class="description-block">
+                        <h5 class="description-header">{{ user.email }}</h5>
+                        <span class="description-text">邮箱</span>
+                    </div>
+                </div>
+                <div class="col-sm-4 border-right">
+                    <div class="description-block">
+                        <h5 class="description-header">{{ user.nickname }}</h5>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="description-block">
+                        <h5 class="description-header">{{ user.location }}</h5>
+                        <span class="description-text">地区</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="list-group">
+	<a href="{% url 'page:article' %}" class="list-group-item active">
+		<h4 class="list-group-item-heading">
+            文章<span class="pull-right" style="font-size: larger">{{ articles.object_list.count  }}</span>
+        </h4>
+	</a>
+    {% for article in articles %}
+		<h4 class="list-group-item-heading">
+			<a href="{% url 'page:article-detail' article.id %}"><h3>{{ article.title }}</h3></a>
+		</h4>
+		<p class="list-group-item-text">
+            &nbsp;&nbsp;浏览:{{ article.read_count }}&nbsp;&nbsp;评论:{{ article.articlecomments_set.count }}&nbsp;&nbsp;分类:{{ article.category.name }}&nbsp;&nbsp;发布于{{ article.create_time}}
+		</p><hr>
+    {% endfor %}
+    </div>
+
+    {% if articles %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+             {% if articles.has_previous %}
+            <li class="previous">
+                <a href="?page={{ articles.previous_page_number }}">上一页</a>
+            </li>
+        {% else %}
+            <li class="previous disabled">
+            </li>
+        {% endif %}
+
+        <li>{{ articles.number }}/{{ articles.paginator.num_pages }}</li>
+
+        {% if articles.has_next %}
+            <li class="next">
+                <a href="?page={{ articles.next_page_number }}">下一页</a>
+            </li>
+        {% else %}
+            <li class="next disabled">
+            </li>
+        {% endif %}
+        </ul>
+    </nav>
+    {% else %}
+        <span style="color: #35a7cf">暂无发布</span>
+    {% endif %}
+
+
+
+    <div class="list-group">
+        <a href="{% url 'page:topic' %}" class="list-group-item active">
+            <h4 class="list-group-item-heading">
+                话题<span class="pull-right" style="font-size: larger">{{ topics.object_list.count  }}</span>
+            </h4>
+        </a>
+        {% for topic in topics %}
+            <h4 class="list-group-item-heading">
+                <a href="{% url 'page:topic-detail' topic.id %}"><h3>{{ topic.content }}</h3></a>
+            </h4>
+            <p class="list-group-item-text">
+                <span class="panel-title"></span>&nbsp;&nbsp;<span class="glyphicon glyphicon-search" style="color: rgb(255, 109, 97);"> {{ topic.read_count }}</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-comment" style="color: rgb(255, 109, 97);"> {{ topic.get_comment_num }}</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-time" style="color: rgb(255, 140, 60);">{{ topic.create_time}}</span></h3><span class="glyphicon glyphicon-heart" style="color: rgb(255, 109, 97);">{{ topic.like_count }}</span>
+
+            </p><hr>
+        {% endfor %}
+    </div>
+
+    {% if topics %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+             {% if topics.has_previous %}
+            <li class="previous">
+                <a href="?page={{ topics.previous_page_number }}">上一页</a>
+            </li>
+        {% else %}
+            <li class="previous disabled">
+            </li>
+        {% endif %}
+
+        <li>{{ topics.number }}/{{ topics.paginator.num_pages }}</li>
+
+        {% if topics.has_next %}
+            <li class="next">
+                <a href="?page={{ topics.next_page_number }}">下一页</a>
+            </li>
+        {% else %}
+            <li class="next disabled">
+            </li>
+        {% endif %}
+        </ul>
+    </nav>
+    {% else %}
+    <span style="color: #35a7cf">暂无发布</span>
+    {% endif %}
+
+
+    <div class="list-group">
+        <a href="{% url 'page:chat' %}" class="list-group-item active">
+            <h4 class="list-group-item-heading">
+                闲聊<span class="pull-right" style="font-size: larger">{{ chats.object_list.count  }}</span>
+            </h4>
+        </a>
+        {% for chat in chats %}
+            <p class="list-group-item-text">
+                <a href="{% url 'page:chat-detail' chat.id %}" ><h3>{{ chat.content }}</h3></a><span class="panel-title"></span>&nbsp;&nbsp;<span class="glyphicon glyphicon-search" style="color: rgb(255, 109, 97);"> {{ topic.read_count }}</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-comment" style="color: rgb(255, 109, 97);"> {{ chat.get_comment_num }}</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-time" style="color: rgb(255, 140, 60);">{{ chat.create_time}}</span></h3><span class="glyphicon glyphicon-heart" style="color: rgb(255, 109, 97);">{{ chat.like_count }}</span>
+            </p><hr>
+        {% endfor %}
+    </div>
+
+
+    {% if chats %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+             {% if chats.has_previous %}
+            <li class="previous">
+                <a href="?page={{ chats.previous_page_number }}">上一页</a>
+            </li>
+        {% else %}
+            <li class="previous disabled">
+            </li>
+        {% endif %}
+
+        <li>{{ chats.number }}/{{ chats.paginator.num_pages }}</li>
+
+        {% if chats.has_next %}
+            <li class="next">
+                <a href="?page={{ chats.next_page_number }}">下一页</a>
+            </li>
+        {% else %}
+            <li class="next disabled">
+            </li>
+        {% endif %}
+        </ul>
+    </nav>
+    {% else %}
+    <span style="color: #35a7cf">暂无发布</span>
+    {% endif %}
+
+
+
+    <div class="list-group">
+        <a href="{% url 'page:image' %}" class="list-group-item active">
+            <h4 class="list-group-item-heading">
+                闲聊<span class="pull-right" style="font-size: larger">{{ images.object_list.count  }}</span>
+            </h4>
+        </a>
+        {% for image in images %}
+            <h4 class="list-group-item-heading">
+                <h3>{{ image.title | default_if_none:"" }}</h3>
+            </h4>
+            <p class="list-group-item-text">
+                <a href="{% url 'page:image-detail' image.id%}"><img class="thumbnail" src="/media/{{ image.url }}" width="80" height="80"></a><p>浏览:{{ image.read_count }}&nbsp;&nbsp;评论:{{ image.get_comment_num }}</p>
+                        <p>{{ image.create_time }}</p>
+            </p>
+            <hr>
+        {% endfor %}
+    </div>
+
+    {% if images %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+             {% if images.has_previous %}
+            <li class="previous">
+                <a href="?page={{ images.previous_page_number }}">上一页</a>
+            </li>
+        {% else %}
+            <li class="previous disabled">
+            </li>
+        {% endif %}
+
+        <li>{{ images.number }}/{{ images.paginator.num_pages }}</li>
+
+        {% if images.has_next %}
+            <li class="next">
+                <a href="?page={{ images.next_page_number }}">下一页</a>
+            </li>
+        {% else %}
+            <li class="next disabled">
+            </li>
+        {% endif %}
+        </ul>
+    </nav>
+    {% else %}
+    <span style="color: #35a7cf">暂无发布</span>
+    {% endif %}
+
+{% endblock %}

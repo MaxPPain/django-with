@@ -1,0 +1,158 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+{% block content %}
+
+    <script src="{% static 'page/js/modernizr-2.6.2.min.js' %}"></script>
+    <div id="fh5co-offcanvas">
+        <a href="#" class="fh5co-close-offcanvas js-fh5co-close-offcanvas"><span><i
+                class="icon-cross3"></i> <span>关闭</span></span></a>
+        <div class="fh5co-bio">
+            {% if request.user.is_authenticated == True %}
+            <figure>
+                <img src="/media/{{ user.avatar }}" alt="Free HTML5 Bootstrap Template" class="img-responsive">
+            </figure>
+            <h3 class="heading">{{ user.nickname }}</h3>
+            <h2>简介</h2>
+            <p>{{ user.intro | default_if_none:"这个人很懒什么都没写" }}</p>
+            {% endif %}
+        </div>
+        <div class="fh5co-menu">
+            <div class="fh5co-box">
+                <h3 class="heading">个人中心</h3>
+                <ul>
+                    {% if request.user.is_authenticated == True %}
+                    <li><a href="{% url 'user:setting' %}">设置</a></li>
+                    <li><a class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">发布看图</a></li>
+                    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"
+                                            aria-hidden="true">&times;</button>
+                                </div>
+                                <form class="form-horizontal" method="post" action="{% url 'page:image' %}"
+                                      enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    标题：<input type="text" id="title" name="title" class="col-sm-6 control-label" required="">
+                                    <label for="inputAvatar" class="col-sm-2 control-label">图片</label>
+
+                                    <div class="col-sm-10">
+                                        <input type="file" class="form-control" id="inputAvatar" placeholder="Avatar"
+                                               name="image" required="required">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                        <button type="submit" class="btn btn-primary">提交</button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                    <li><a href="{% url 'user:password' %}">修改密码</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="fh5co-box">
+                <h3 class="heading">搜索</h3>
+                <form action="{% url 'page:image' %}" method="get">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="输入关键字">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- END #fh5co-offcanvas -->
+    <header id="fh5co-header">
+        <div class="container-fluid">
+            <div class="row">
+                <a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle"><i></i></a>
+                <div class="col-lg-12 col-md-12 text-center">
+                    <h1 id="fh5co-logo">With US看图</h1>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-warning alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% else %}
+    {% endif %}
+
+
+    <div class="row">
+        {% for img in images %}
+            <div class="col-sm-6 col-md-3">
+                <div class="thumbnail">
+                    <a href="{% url 'page:image-detail' img.id %}"><img src="/media/{{ img.url }}" class="img-rounded"
+                                                                        alt="" height="40"></a>
+                    <div class="caption">
+                        <p><span style="color: rgb(255, 109, 132);">{{ img.title | default_if_none:"" }}</span></p>
+                        <p>浏览:{{ img.read_count }}&nbsp;&nbsp;评论:{{ img.get_comment_num }}&nbsp;&nbsp;时间：{{ img.create_time | date:"m-d H:i" }}</p>
+                        <p>
+                            <a href="#"><img src="/media/{{ img.user.avatar }}" class="img-circle" alt="Cinque Terre"
+                                             width="70" height="35">{{ img.user.nickname }}
+                            </a>
+
+                        </p>
+                        <div class="rateit">
+                            {% if request.user.is_authenticated == True %}
+                            <form action="{% url 'page:like' img.id 4 %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-default btn-xs"><i class="fa fa-thumbs-o-up"></i>
+                                    <span class="glyphicon glyphicon-heart"
+                                          style="color: rgb(255, 109, 97);">{{ img.like_count }} 喜欢</span>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if images.has_previous %}
+                <li class="previous">
+                    <a href="?page={{ images.previous_page_number }}">上一页</a>
+                </li>
+            {% else %}
+                <li class="previous disabled">
+                </li>
+            {% endif %}
+
+            <li>{{ images.number }}/{{ images.paginator.num_pages }}</li>
+
+
+            {% if images.has_next %}
+                <li class="next">
+                    <a href="?page={{ images.next_page_number }}">下一页</a>
+                </li>
+            {% else %}
+                <li class="next disabled">
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+
+{% endblock %}
+
+
+

@@ -1,0 +1,156 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+{% block content %}
+
+    <a href="{% if chat.id == 1 %}/chat/1{% else %}/chat/{{ chat.id | add:"-1" }}{% endif %}"
+       class="fh5co-post-prev"><span><i class="icon-chevron-left"></i> {% if chat.id != 1 %}←{% endif %}</span></a>
+
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+
+    <div class="row">
+
+        <div class="col-md-6">
+            <div class="box box-widget">
+                <div class="box-header with-border">
+                    <div class="user-block">
+                        <img class="img-circle" src="" alt="{{ chat.user.location }}">
+                        <span class="description">{{ chat.create_time }}</span>
+                    </div>
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i
+                                class="fa fa-minus"></i>收起
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i>不想看到
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <p>{{ chat.content }}</p>
+
+                    {% if request.user.is_authenticated == True %}
+                        <form action="{% url 'page:like' chat.id 3 %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-default btn-xs"><i class="fa fa-thumbs-o-up"></i> <span
+                                    class="glyphicon glyphicon-heart"
+                                    style="color: rgb(255, 109, 97);">喜欢</span>
+                            </button>
+                        </form>
+                        {% endif %}
+                    <span class="pull-right text-muted">{{ chat.like_count }} 喜欢 - {{ chat.chatcomments_set.count }} 评论</span>
+                </div>
+
+
+                {% for comment in chat.get_comment %}
+                    <div class="box-footer box-comments">
+                    <div class="box-comment">
+                        <img class="img-circle img-sm" src="" alt="{{ comment.user.location }}">
+                        <div class="comment-text">
+                            <span class="username">{{ comment.create_time }}</span>
+                            {{ comment.content }}
+                            <form action="{% url 'page:reply' comment.id 3 %}" method="post">
+                                {% csrf_token %}
+                                        <a class="comment"><span class="text-muted pull-right">回复</span></a>
+                                        <textarea style="display: none" class="commentcontent" name="commentcontent"></textarea>
+                                        <button type="submit" class="btn-primary-first" style="display: none">提交</button>
+                                        <button type="reset" class="btn-primary-second" style="display: none">关闭</button>
+                            </form>
+                        </div>
+                    </div>
+
+
+
+                    {% for reply in comment.get_reply %}
+                        <div class="box-footer box-comments">
+                            <div class="box-comment">
+                                <div class="comment-text">
+                                <span class="username">{{ reply.user.location }}
+                                    <span class="text-muted pull-right">{{ reply.create_time }}</span></span>
+                                    {{ reply.content }}
+{##}
+{#                                    <form action="{% url 'page:areply' reply.id 3 %}" method="post">#}
+{#                                        {% csrf_token %}#}
+{#                                        <a class="check"><span class="text-muted pull-right">回复</span></a>#}
+{#                                        <textarea style="display: none" class="content" name="replycontent"></textarea>#}
+{#                                        <button type="submit" class="btn-primary" style="display: none">提交</button>#}
+{#                                        <button type="reset" class="btn-primary-close" style="display: none">关闭</button>#}
+{#                                    </form>#}
+                                </div>
+                            </div>
+
+                        </div>
+                    {% endfor %}
+
+                {% endfor %}
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-warning alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                {% endif %}
+
+                <div class="box-footer">
+                    <form action="{% url 'page:comment' chat.id 3 %}" method="post">
+                        {% csrf_token %}
+                        <div class="img-push">
+                            <input type="text" maxlength="200" class="form-control input-sm" placeholder="来一个沈平,限制200字以内"
+                                   name="content">
+                        </div>
+                        {% if request.user.is_authenticated == True %}
+                            <button type="submit" class="btn btn-primary pull-right">提交评论</button>
+                        {% else %}
+                            <div class="load-more">
+                                <a style="background-color: #fff;" href="{% url 'user:login' %}">登录后才可以评论哦~</a>
+                            </div>
+                        {% endif %}
+                    </form>
+                </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+<script src="{% static 'js/jquery-1.7.2.min.js' %}"></script>
+<script>
+{#    $(function(){#}
+{#      $(".check").click(function(){#}
+{#        $(".content").show();#}
+{#        $(".btn-primary").show();#}
+{#        $(".btn-primary-close").show();#}
+{#      })#}
+{#    });#}
+{##}
+{##}
+{#    $(function(){#}
+{#      $(".btn-primary-close").click(function(){#}
+{#        $(".content").hide();#}
+{#        $(".btn-primary").hide();#}
+{#        $(".btn-primary-close").hide();#}
+{#      })#}
+{#    });#}
+
+    $(function(){
+      $(".comment").click(function(){
+        $(".commentcontent").show();
+        $(".btn-primary-first").show();
+        $(".btn-primary-second").show();
+      })
+    });
+
+     $(function(){
+      $(".btn-primary-second").click(function(){
+        $(".commentcontent").hide();
+        $(".btn-primary-first").hide();
+        $(".btn-primary-second").hide();
+      })
+    })
+
+</script>
+
+{% endblock %}

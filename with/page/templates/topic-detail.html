@@ -1,0 +1,143 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+{% block content %}
+
+    <a href="{% if topic.id == 1 %}/topic/1{% else %}/topic/{{ topic.id | add:"-1" }}{% endif %}"
+       class="fh5co-post-prev"><span><i class="icon-chevron-left"></i> {% if topic.id != 1 %}←{% endif %}</span></a>
+    <section class="section">
+        <div class="container">
+
+            <article class="card blog">
+                <div class="card__header">
+                    <h6 style="font-size: 19px">{{ topic.content }}</h6>
+                    <span>发布时间：{{ topic.create_time | date:"Y-m-d H:i:s" }}</span>
+                    <span>浏览（{{ topic.read_count }}）</span>
+                    <span>评论（{{ topic.topiccomments_set.count }}）</span>
+
+                </div>
+
+                <div class="blog__arthur">
+                    <div class="blog__arthur-contents">
+                        <h3>作者：<a href="#"></a>{{ topic.user.nickname }}</h3>
+                    </div>
+                </div>
+            </article>
+
+            <h4>共{{ topic.topiccomments_set.count }}条评论</h4>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-warning alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% else %}
+            {% endif %}
+
+            <div class="box-footer">
+                <form action="{% url 'page:comment' topic.id 2 %}" method="post">
+                    {% csrf_token %}
+                    <div class="img-push">
+                        <input type="text" maxlength="200" class="form-control input-sm" placeholder="来一个沈平,限制200字以内" name="content">
+                    </div>
+                    {% if request.user.is_authenticated == True %}
+                        <button type="submit" class="btn btn-primary pull-right">提交评论</button>
+                    {% else %}
+                        <div class="load-more">
+                            <a style="background-color: #fff;" href="{% url 'user:login' %}">登录后才可以评论哦~</a>
+                        </div>
+                    {% endif %}
+                </form>
+            </div>
+
+            <div class="widget-content">
+                <ul class="messages_layout">
+                    {% for comment in comments %}
+                        <li class="by_myself right"><a href="#" class="img-rounded"><img
+                                src="/media/{{ comment.user.avatar }}" width="50" height="50"/></a>
+                            <div class="message_wrap"><span class="arrow"></span>
+                                <div class="info"><a class="name">{{ comment.user.nickname }}</a> <span
+                                        class="time">{{ comment.create_time | timesince }}</span>
+                                    <div class="options_arrow">
+                                        <div class="dropdown pull-right"><a class="dropdown-toggle " id="dLabel"
+                                                                            role="button"
+                                                                            data-toggle="dropdown" data-target="#"
+                                                                            href="#">操作</a>
+                                            <ul class="dropdown-menu " role="menu" aria-labelledby="dLabel">
+                                                <form action="{% url 'page:reply' comment.id 2 %}" method="post">
+                                                        {% csrf_token %}
+                                                        <a class="check">回复</a>
+                                                        <li>
+                                                            <textarea style="display: none" class="content"
+                                                                      name="replycontent"></textarea>
+                                                        </li>
+                                                        <li>
+                                                            <button type="submit" class="btn-primary">提交</button>
+                                                        </li>
+                                                </form>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text"> {{ comment.content }}
+                                </div>
+                            </div>
+                        </li>
+
+                        {% for reply in comment.get_reply %}
+                            <li class="from_user left"><a href="#" class="img-rounded"><img
+                                    src="/media/{{ reply.user.avatar }}" width="40" height="40"/></a>
+                                <div class="message_wrap"><span class="arrow"></span>
+                                    <div class="info"><a
+                                            class="name">{{ reply.user.nickname }}@{{ reply.reply.user.nickname }}</a>
+                                        <span class="time">{{ reply.create_time | timesince }}</span>
+                                        <div class="options_arrow">
+                                            <div class="dropdown pull-right"><a class="dropdown-toggle " id="dLabel"
+                                                                                role="button"
+                                                                                data-toggle="dropdown" data-target="#"
+                                                                                href="#">操作</a>
+                                                <ul class="dropdown-menu " role="menu" aria-labelledby="dLabel">
+                                                    <form action="{% url 'page:areply' comment.id 2 %}" method="post">
+                                                        {% csrf_token %}
+                                                        <a class="check">回复</a>
+                                                        <li>
+                                                            <textarea style="display: none" class="content"
+                                                                      name="replycontent"></textarea>
+                                                        </li>
+                                                        <li>
+                                                            <button type="submit" class="btn-primary">提交</button>
+                                                        </li>
+                                                    </form>
+                                                    {#                                        <li><a href="#"> 删除</a></li>#}
+                                                    {#                                        <li><a href="#"> 分享</a></li>#}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="text"> {{ reply.content }}
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+
+
+
+        </div>
+    </section>
+
+
+    <script src="{% static 'js/jquery-1.7.2.min.js' %}"></script>
+    <script>$(function () {
+        $(".check").click(function () {
+            $(".content").show();
+        })
+    })
+    </script>
+
+{% endblock %}
+

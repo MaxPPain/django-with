@@ -1,0 +1,17 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+
+
+{% block content %}
+
+    <div class="row">
+        <form method="post" action="{% url 'page:push' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.media }}
+            {{ form.as_p }}
+
+            <p><input type="submit" class="btn btn-primary pull-left btn-lg" value="发布"></p>
+        </form>
+    </div>
+
+{% endblock %}

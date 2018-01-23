@@ -1,0 +1,123 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+{% block content %}
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script src="{% static 'page/js/modernizr-2.6.2.min.js' %}"></script>
+    <div id="fh5co-offcanvas">
+        <a href="#" class="fh5co-close-offcanvas js-fh5co-close-offcanvas"><span><i
+                class="icon-cross3"></i> <span>关闭</span></span></a>
+        <div class="fh5co-bio">
+            {% if request.user.is_authenticated == True %}
+            <figure>
+                <img src="/media/{{ user.avatar }}" alt="" class="img-responsive">
+            </figure>
+            <h3 class="heading">{{ user.nickname }}</h3>
+            <h2>简介</h2>
+            <p>{{ user.intro | default_if_none:"这个人很懒什么都没写" }}</p>
+            {% endif %}
+        </div>
+        <div class="fh5co-menu">
+            <div class="fh5co-box">
+                <h3 class="heading">个人中心</h3>
+                <ul>
+                    {% if request.user.is_authenticated == True %}
+                    <li><a href="{% url 'user:setting' %}">设置</a></li>
+                    <li><a href="{% url 'page:push' %}" class="btn btn-primary btn-lg">发布文章</a></li>
+                    <li><a href="{% url 'user:password' %}">修改密码</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="fh5co-box">
+                <h3 class="heading">搜索</h3>
+                <form action="{% url 'page:article' %}" method="get">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="输入关键字" name="search">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- END #fh5co-offcanvas -->
+    <header id="fh5co-header">
+        <div class="container-fluid">
+            <div class="row">
+                <a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle"><i></i></a>
+                <div class="col-lg-12 col-md-12 text-center">
+                    <h1 id="fh5co-logo">With US文章</h1>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-warning alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% else %}
+    {% endif %}
+
+    <div class="row">
+        {% for article in articles %}
+            <div class="col-sm-6 col-md-3">
+                <div class="thumbnail">
+                    <img src="/media/{{ article.image }}" class="img-rounded"
+                         alt="{{ article.user.location }}" height="40">
+                    <div class="caption">
+                        <a href="{% url 'page:article-detail' article.id %}"><h3>{{ article.title }}</h3></a>
+                        <p>{{ article.user.nickname }}&nbsp;&nbsp;浏览:{{ article.read_count }}&nbsp;&nbsp;评论:{{ article.articlecomments_set.count }}&nbsp;&nbsp;分类:{{ article.category.name }}&nbsp;&nbsp;发布于{{ article.create_time | timesince }}前</p>
+                        <p>
+                            <img src="/media/{{ article.user.avatar }}" class="img-rounded" alt="Cinque Terre"
+                                 width="70" height="35">
+                        {% if request.user.is_authenticated == True %}
+                        <form action="{% url 'page:like' article.id 1 %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-default btn-xs"><i class="fa fa-thumbs-o-up"></i> <span
+                                    class="glyphicon glyphicon-heart"
+                                    style="color: rgb(255, 109, 97);">{{ article.like_count }} 喜欢</span></button>
+                        </form>
+                        {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+
+
+
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if articles.has_previous %}
+                <li class="previous">
+                    <a href="?page={{ articles.previous_page_number }}">上一页</a>
+                </li>
+            {% else %}
+                <li class="previous disabled">
+                </li>
+            {% endif %}
+
+            <li>{{ articles.number }}/{{ articles.paginator.num_pages }}</li>
+
+            {% if articles.has_next %}
+                <li class="next">
+                    <a href="?page={{ articles.next_page_number }}">下一页</a>
+                </li>
+            {% else %}
+                <li class="next disabled">
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+
+{% endblock %}

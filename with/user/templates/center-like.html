@@ -1,0 +1,240 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+{% block content %}
+
+    <div class="box box-widget widget-user">
+        <div class="widget-user-header bg-aqua-active">
+            <h3 class="widget-user-username">{{ user.email }}</h3>
+            <h5 class="widget-user-desc">{{ user.intro | default_if_none:"此人很懒，什么都没写..." }}</h5>
+        </div>
+        <div class="widget-user-image">
+            <img class="img-circle" src="/media/{{ user.avatar }}" alt="{{ user.location }}">
+        </div>
+        <div class="box-footer">
+            <div class="row">
+                <div class="col-sm-4 border-right">
+                    <div class="description-block">
+                        <h5 class="description-header">{{ user.get_like_count }}</h5>
+                        <span class="description-text">喜欢</span>
+                    </div>
+                </div>
+                <div class="col-sm-4 border-right">
+                    <div class="description-block">
+                        <h5 class="description-header">{{ user.nickname }}</h5>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="description-block">
+                        <h5 class="description-header">{{ user.get_count }}</h5>
+                        <span class="description-text">发布</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="list-group">
+        <span class="list-group-item active">
+		<h4 class="list-group-item-heading">
+            喜欢的文章<span class="pull-right" style="font-size: larger">{{ articles.object_list.count  }}</span>
+        </h4></span>
+
+    {% for article in articles %}
+		<h4 class="list-group-item-heading">
+			<a href="{% url 'page:article-detail' article.article_id %}"><h3>{{ article.article.title }}</h3></a>
+		</h4>
+		<p class="list-group-item-text">
+            &nbsp;&nbsp;浏览:{{ article.article.read_count }}&nbsp;&nbsp;评论:{{ article.article.articlecomments_set.count }}&nbsp;&nbsp;分类:{{ article.article.category.name }}&nbsp;&nbsp;发布于{{ article.article.create_time}}
+		</p>
+        <form action="{% url 'page:unlike' article.article_id 1 %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-default btn-xs"><i class="fa fa-thumbs-o-up"></i><img src="/media/avatar/broken_heart.png"> 不喜欢了</button>
+        </form>
+        <hr>
+
+
+    {% endfor %}
+    </div>
+
+    {% if articles %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+             {% if articles.has_previous %}
+            <li class="previous">
+                <a href="?page={{ articles.previous_page_number }}">上一页</a>
+            </li>
+        {% else %}
+            <li class="previous disabled">
+            </li>
+        {% endif %}
+
+        <li>{{ articles.number }}/{{ articles.paginator.num_pages }}</li>
+
+        {% if articles.has_next %}
+            <li class="next">
+                <a href="?page={{ articles.next_page_number }}">下一页</a>
+            </li>
+        {% else %}
+            <li class="next disabled">
+            </li>
+        {% endif %}
+        </ul>
+    </nav>
+    {% else %}
+        <span style="color: #35a7cf">暂无喜欢</span>
+    {% endif %}
+
+
+
+    <div class="list-group">
+            <span class="list-group-item active">
+            <h4 class="list-group-item-heading">
+                喜欢的话题<span class="pull-right" style="font-size: larger">{{ topics.object_list.count  }}</span>
+            </h4></span>
+
+        {% for topic in topics %}
+            <h4 class="list-group-item-heading">
+                <a href="{% url 'page:topic-detail' topic.topic_id %}"><h3>{{ topic.topic.content }}</h3></a>
+            </h4>
+            <p class="list-group-item-text">
+                <span class="panel-title"></span>&nbsp;&nbsp;<span class="glyphicon glyphicon-search" style="color: rgb(255, 109, 97);"> {{ topic.topic.read_count }}</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-comment" style="color: rgb(255, 109, 97);"> {{ topic.topic.get_comment_num }}</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-time" style="color: rgb(255, 140, 60);">{{ topic.topic.create_time}}</span><span class="glyphicon glyphicon-heart" style="color: rgb(255, 109, 97);">{{ topic.topic.like_count }}</span>
+
+            </p>
+            <form action="{% url 'page:unlike' topic.topic_id 2 %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-default btn-xs"><i class="fa fa-thumbs-o-up"></i><img src="/media/avatar/broken_heart.png"> 不喜欢了</button>
+            </form>
+            <hr>
+        {% endfor %}
+    </div>
+
+    {% if topics %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+             {% if topics.has_previous %}
+            <li class="previous">
+                <a href="?page={{ topics.previous_page_number }}">上一页</a>
+            </li>
+        {% else %}
+            <li class="previous disabled">
+            </li>
+        {% endif %}
+
+        <li>{{ topics.number }}/{{ topics.paginator.num_pages }}</li>
+
+        {% if topics.has_next %}
+            <li class="next">
+                <a href="?page={{ topics.next_page_number }}">下一页</a>
+            </li>
+        {% else %}
+            <li class="next disabled">
+            </li>
+        {% endif %}
+        </ul>
+    </nav>
+    {% else %}
+    <span style="color: #35a7cf">暂无喜欢</span>
+    {% endif %}
+
+
+    <div class="list-group">
+                <span class="list-group-item active">
+            <h4 class="list-group-item-heading">
+                喜欢的闲聊<span class="pull-right" style="font-size: larger">{{ chats.object_list.count  }}</span>
+            </h4></span>
+
+        {% for chat in chats %}
+            <p class="list-group-item-text">
+                <a href="{% url 'page:chat-detail' chat.chat_id %}" ><h3>{{ chat.chat.content }}</h3></a><span class="panel-title"></span>&nbsp;&nbsp;<span class="glyphicon glyphicon-search" style="color: rgb(255, 109, 97);"> {{ chat.chat.read_count }}</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-comment" style="color: rgb(255, 109, 97);"> {{ chat.chat.get_comment_num }}</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-time" style="color: rgb(255, 140, 60);">{{ chat.chat.create_time}}</span><span class="glyphicon glyphicon-heart" style="color: rgb(255, 109, 97);">{{ chat.chat.like_count }}</span>
+            </p>
+            <form action="{% url 'page:unlike' chat.chat_id 3 %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-default btn-xs"><i class="fa fa-thumbs-o-up"></i><img src="/media/avatar/broken_heart.png"> 不喜欢了</button>
+            </form>
+            <hr>
+        {% endfor %}
+    </div>
+
+
+    {% if chats %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+             {% if chats.has_previous %}
+            <li class="previous">
+                <a href="?page={{ chats.previous_page_number }}">上一页</a>
+            </li>
+        {% else %}
+            <li class="previous disabled">
+            </li>
+        {% endif %}
+
+        <li>{{ chats.number }}/{{ chats.paginator.num_pages }}</li>
+
+        {% if chats.has_next %}
+            <li class="next">
+                <a href="?page={{ chats.next_page_number }}">下一页</a>
+            </li>
+        {% else %}
+            <li class="next disabled">
+            </li>
+        {% endif %}
+        </ul>
+    </nav>
+    {% else %}
+    <span style="color: #35a7cf">暂无喜欢</span>
+    {% endif %}
+
+
+
+    <div class="list-group">
+            <span class="list-group-item active">
+            <h4 class="list-group-item-heading">
+                喜欢的看图<span class="pull-right" style="font-size: larger">{{ images.object_list.count  }}</span>
+            </h4></span>
+
+        {% for image in images %}
+            <h4 class="list-group-item-heading">
+                {{ image.image.title | default_if_none:"" }}
+            </h4>
+            <p class="list-group-item-text">
+                <a href="{% url 'page:image-detail' image.image_id %}"><img class="thumbnail" src="/media/{{ image.image.url }}" width="80" height="80"></a><p>浏览:{{ image.image.read_count }}&nbsp;&nbsp;评论:{{ image.image.get_comment_num }}</p>
+                        <p>{{ image.image.create_time }}</p>
+            <form action="{% url 'page:unlike' image.image_id 4 %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-default btn-xs"><i class="fa fa-thumbs-o-up"></i><img src="/media/avatar/broken_heart.png"> 不喜欢了</button>
+            </form>
+            <hr>
+        {% endfor %}
+    </div>
+
+    {% if images %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+             {% if images.has_previous %}
+            <li class="previous">
+                <a href="?page={{ images.previous_page_number }}">上一页</a>
+            </li>
+        {% else %}
+            <li class="previous disabled">
+            </li>
+        {% endif %}
+
+        <li>{{ images.number }}/{{ images.paginator.num_pages }}</li>
+
+        {% if images.has_next %}
+            <li class="next">
+                <a href="?page={{ images.next_page_number }}">下一页</a>
+            </li>
+        {% else %}
+            <li class="next disabled">
+            </li>
+        {% endif %}
+        </ul>
+    </nav>
+    {% else %}
+    <span style="color: #35a7cf">暂无喜欢</span>
+    {% endif %}
+
+{% endblock %}
